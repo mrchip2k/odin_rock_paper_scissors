@@ -8,7 +8,73 @@
 
 <body>
   <script>
-    
+    function convertTextToNumber(input) {
+      input = input.trim();
+      input = input.toUpperCase();
+  
+      switch (input) {
+        case "ROCK":
+          return 1;
+          break;
+        case "PAPER":
+          return 2;
+          break;
+        case "SCISSORS":
+          return 3;
+          break;
+        default: /* invalid input */
+          return 0;
+      }
+    }
+  
+    function convertNumberToText(input) {
+      switch (input) {
+        case 1:
+          return "Rock";
+          break;
+        case 2:
+          return "Paper";
+          break;
+        case 3:
+         return "Scissors";
+         break;
+        default:
+          return "Invalid input";
+      }
+    }
+      
+    function computerPlay() {
+      let computerAnswer = Math.floor(Math.random() * 3 + 1);
+      return computerAnswer;
+    }
+
+    function getPlayerAnswer() {
+      let answer = prompt("Rock, paper, or scissors?");
+      return convertTextToNumber(answer);
+    }
+
+    function playRound(playerSelection, computerSelection) {
+      if (playerSelection === 0) { /* Warn the user about invalid input */
+        return "excuse me what did you just say about me?";
+      }
+      
+      textPlayerSelection = convertNumberToText(playerSelection);
+      textComputerSelection = convertNumberToText(computerSelection);
+      if (playerSelection === computerSelection) {
+        return "Draw";
+      } else if ( (playerSelection === 1 && computerSelection === 3) || (playerSelection === 2 && computerSelection === 1) || (playerSelection === 3 && computerSelection === 2) ) {
+        /* The player wins */
+        return `You win! ${textPlayerSelection} beats ${textComputerSelection}`;
+      } else {
+        /* The computer wins */
+        return `You loose! ${textComputerSelection} beats ${textPlayerSelection}`;
+      }
+    }
+
+    let playerSelection = getPlayerAnswer();
+    let computerSelection = computerPlay();
+    alert(playRound(playerSelection, computerSelection));
+
   </script>
 </body>
 </html>
