@@ -4,33 +4,108 @@
 <head>
   <meta charset="utf-8"/>
   <title>Rock Paper Scissors</title>
+  <style>
+    body{
+    }
+    .centered div{
+      text-align: center;
+      position: relative;
+      top: 200px;
+      margin: 40px;
+    }
+  </style>
 </head>
 
 <body>
-    <p>Open the console(F12) to play Rock Paper Scissors! Write game() to restart.</p>
+  <button style="display: none" id="dontmindmenothingtoseeherethisistotallyordinarycode">comic sans sucks</button>
+  <div class="centered">
+    <div id="buttons">
+      <button id="button-rock">Rock</button>
+      <button id="button-paper">Paper</button>
+      <button id="button-scissors">Scissors</button>
+    </div>
+    <div id="round-message">Rock Paper Scissors game. Pick one!</div>
+    <div id="scores"></div>
+    <div id="restart-message" style="display: none">Click on any button to restart the game.</div>
+  </div>
+
   <script>
+    const buttonRock = document.querySelector("#button-rock");
+    const buttonPaper = document.querySelector("#button-paper");
+    const buttonScissors = document.querySelector("#button-scissors");
 
-    function convertTextToNumber(input) {
-      if (input === null) { /* Clicked on Cancel */
+    const roundOutputTextbox = document.querySelector("#round-message");
+    const scoreboard = document.querySelector("#scores");
+    const restartMessage = document.querySelector("#restart-message");
+
+    let playerScore = 0;
+    let computerScore = 0;
+
+    buttonRock.addEventListener("click", function(){
+      play(1);
+    });
+    buttonPaper.addEventListener("click", function(){
+      play(2);
+    });
+    buttonScissors.addEventListener("click", function(){
+      play(3);
+    });
+
+
+    function play(playerChoice) {
+      restartMessage.style.display = "none";
+      let computerChoice = computerPlay();
+
+      let winner = findWinner(playerChoice, computerChoice);
+      
+      displayRoundOutcome(winner, playerScore, computerScore, playerChoice, computerChoice);
+
+      if (playerScore >= 5) {
+        scoreboard.textContent = `You won the game! Final score: 5 to ${computerScore}.`;
+        resetScore();
+        restartMessage.style.display = "block";
+      } else if (computerScore >= 5) {
+        scoreboard.textContent = `You lost! OUTSKILLED HAHAHA! Final score: ${playerScore} to 5.`;
+        resetScore();
+        restartMessage.style.display = "block";
+      }
+    }
+    
+    function computerPlay() {
+      let randomAnswer = Math.floor(Math.random() * 3 + 1);
+      return randomAnswer;
+    }
+    
+    function findWinner(playerChoice, computerChoice) {
+      if (playerChoice === computerChoice) {
         return 0;
+      } else if ( (playerChoice === 1 && computerChoice === 3) || (playerChoice === 2 && computerChoice === 1) || (playerChoice === 3 && computerChoice === 2) ) {
+        /* The player wins */
+        playerScore ++;
+        return 1;
+      } else {
+        /* The computer wins */
+        computerScore ++;
+        return -1;
+      }
+    }
+
+    function displayRoundOutcome (winner, playerScore, computerScore, playerChoice, computerChoice) {
+      const textPlayerChoice = convertNumberToText(playerChoice);
+      const textComputerChoice = convertNumberToText(computerChoice);
+
+      if (winner === 1) {
+        roundOutputTextbox.textContent = `You win! ${textPlayerChoice} beats ${textComputerChoice}`;
+      } else if (winner === -1) {
+        roundOutputTextbox.textContent = `You loose! ${textComputerChoice} beats ${textPlayerChoice}`;
+      } else if (winner === 0) {
+        roundOutputTextbox.textContent = `You both choose ${textPlayerChoice}!`;
+      } else {
+        alert("zoozle bamboozle");
+        roundOutputTextbox.textContent = "Z O O Z L E";
       }
 
-      input = input.trim();
-      input = input.toUpperCase();
-  
-      switch (input) {
-        case "ROCK":
-          return 1;
-          break;
-        case "PAPER":
-          return 2;
-          break;
-        case "SCISSORS":
-          return 3;
-          break;
-        default: /* invalid input */
-          return 0;
-      }
+      scoreboard.textContent = `Player: ${playerScore}, Computer: ${computerScore}`;
     }
 
     function convertNumberToText(input) {
@@ -49,79 +124,41 @@
       }
     }
 
-
-    function getPlayerAnswer() {
-      let answer = prompt("Rock, paper, or scissors?");
-      return convertTextToNumber(answer);
-    }
-    
-    function computerPlay() {
-      let computerAnswer = Math.floor(Math.random() * 3 + 1);
-      return computerAnswer;
-    }
-    
-    let textPlayerSelection;
-    let textComputerSelection;
-    function playRound(playerSelection, computerSelection) {
-      if (playerSelection === 0) { /* Warn the user about invalid input */
-/*        console.log("Invalid input!"); */
-        alert("Invalid input!");
-        return null;
-      }
-      textPlayerSelection = convertNumberToText(playerSelection);
-      textComputerSelection = convertNumberToText(computerSelection);
-      if (playerSelection === computerSelection) {
-        return 0;
-      } else if ( (playerSelection === 1 && computerSelection === 3) || (playerSelection === 2 && computerSelection === 1) || (playerSelection === 3 && computerSelection === 2) ) {
-        /* The player wins */
-        return 1;
-      } else {
-        /* The computer wins */
-        return -1;
-      }
+    function resetScore () {
+      playerScore = 0;
+      computerScore = 0;
     }
 
-    function displayScore(playerScore, computerScore) {
-      let message = `Player: ${playerScore}, Computer: ${computerScore}`
-      console.log(message);
-    }
-    
-    function game(){
-      console.log("5 rounds, starting now!")
-      let playerScore = 0;
-      let computerScore = 0;
-      
-      for (let rounds = 1; rounds < 6; rounds++) { /*Play the 5 rounds */
-/*        console.log(rounds); */
-        let roundOutcome = playRound(getPlayerAnswer(), computerPlay());
-        
-        if (roundOutcome === null) {      /* Invalid player input. Dont do anything and play the round again */
-          rounds = rounds -1;
-        } else if (roundOutcome === 1) {  /* Player wins the round */
-          playerScore++;
-          console.log(`You win! ${textPlayerSelection} beats ${textComputerSelection}`);
-          displayScore(playerScore, computerScore);
-        } else if (roundOutcome === -1) { /* Computer wins the round */
-          computerScore++;
-          console.log(`You loose! ${textComputerSelection} beats ${textPlayerSelection}`);
-          displayScore(playerScore, computerScore);
-        } else {                          /* Draw */
-          console.log(`You both choose ${textPlayerSelection}!`);
-          displayScore(playerScore, computerScore);
-        }
-      }
-      
-      if (playerScore > computerScore) {
-        console.log("You won the game!");
-      } else if (playerScore < computerScore){
-        console.log("You lost :(")
-      } else {
-        console.log("Draw!")
-      }
-    }
+    const page = document.querySelector("body");
+    const dontpress = document.querySelector("#dontmindmenothingtoseeherethisistotallyordinarycode");
+    function dontrun () {
+      dontpress.style.display = "none";
 
-    game();
+      page.style.backgroundColor = "#0f0";
+      page.style.color = "#f0f";
+      page.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+      page.style.textShadow = "0 0 3px #FF0000, 0 0 5px #0000FF";
+      page.style.fontSize = "50px";
 
+      buttonRock.style.fontSize = "80px";
+      buttonRock.style.color = "#f0f";
+      buttonRock.style.backgroundColor = "#0f0";
+      buttonRock.style.boxShadow = "-5px -3px 50px 50px red";
+      buttonRock.style.border = "10px groove";
+
+      buttonPaper.style.fontSize = "80px";
+      buttonPaper.style.color = "#f0f";
+      buttonPaper.style.backgroundColor = "#0f0";
+      buttonPaper.style.boxShadow = "7px -8px 40px 56px red";
+      buttonPaper.style.border = "10px groove";
+
+      buttonScissors.style.fontSize = "80px";
+      buttonScissors.style.color = "#f0f";
+      buttonScissors.style.backgroundColor = "#0f0";
+      buttonScissors.style.boxShadow = "-30px 15px 40px 30px red";
+      buttonScissors.style.border = "10px groove";
+    }
+    dontpress.addEventListener("click", dontrun);
   </script>
 </body>
 </html>
